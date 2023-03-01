@@ -19,7 +19,8 @@ import com.accord.nmea.service.NmeaService
 import com.accord.nmea.ui.live.ViewpagerAdapter
 import com.accord.nmea.utils.PermisssionUtils
 import com.accord.nmea.utils.SharedPref
-import com.example.newnmea_parser.*
+import com.accord.nmea_parser.basic.BasicNmeaHandler
+import com.accord.nmea_parser.parser.*
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -74,8 +75,17 @@ class MainActivity : BaseActivity<MainViewModel>() {
 
           //  val datarmc:RMC=NmeaparseManager.parseRMC("\$GNRMC,122507.00,A,1257.45652,N,07738.50299,E,0.042,,130223,,,D,V*18")
             val handler=object : BasicNmeaHandler {
+                override fun onNmea(
+                    rmc: RMC,
+                    vtg: VTG,
+                    gga: GGA,
+                    gsa: HashMap<Int, GSA>,
+                    gsv: HashMap<Int, List<GSV_satList>>
+                ) {
 
-                override fun onNmea(rmc: com.example.newnmea_parser.RMC, vtg: VTG, gga: GGA, gsa: HashMap<Int, GSA>, gsv: HashMap<Int, List<GSV_satList>>, gll: GLL) {
+                }
+
+                override fun onNmea(rmc: RMC, vtg: VTG, gga: GGA, gsa: HashMap<Int, GSA>, gsv: HashMap<Int, List<GSV_satList>>, gll: GLL) {
 
                     Log.d("onNmea","$gsa");
 

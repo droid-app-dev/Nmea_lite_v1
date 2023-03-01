@@ -7,7 +7,8 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.accord.nmea.R
 import com.accord.nmea.base.BaseFragment
-import com.example.newnmea_parser.*
+import com.accord.nmea_parser.basic.BasicNmeaHandler
+import com.accord.nmea_parser.parser.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
