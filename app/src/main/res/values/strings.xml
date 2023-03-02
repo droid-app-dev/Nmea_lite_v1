@@ -13,4 +13,25 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="log">Log</string>
+
+
+
+
+    <string name="enable_gps_message">GPS/GNSS is disabled. Enable it now?</string>
+    <string name="enable_gps_positive_button">Enable GPS/GNSS</string>
+    <string name="enable_gps_negative_button">No</string>
+    <string name="gnss_running">GNSS running with interval = %1$ss, min. dist. = %2$sm</string>
+    <string name="clear_assist_warning_title">Delete assist data?</string>
+
+
+    <!-- Permissions -->
+    <string name="title_location_permission">Need location permission</string>
+    <string name="text_location_permission">GPSTest needs access to your location to show GNSS data. If you select \"Never ask again\" you will need to reinstall the app or enable permissions via system settings.</string>
+    <string name="ok">OK</string>
+    <string name="exit">EXIT</string>
+
+
+
+    <string name="gps_not_supported">Please check system settings - device doesn\'t seem to support GNSS/GPS.</string>
+
 </resources>

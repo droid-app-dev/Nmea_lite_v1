@@ -1,22 +1,33 @@
 package com.accord.nmea.ui
 
 import android.Manifest
+import android.app.Activity
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Binder
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.accord.nmea.App.Companion.app
 import com.accord.nmea.R
 import com.accord.nmea.base.BaseActivity
 import com.accord.nmea.databinding.ActivityMainBinding
 import com.accord.nmea.service.NmeaService
 import com.accord.nmea.ui.live.ViewpagerAdapter
+import com.accord.nmea.utils.LibUIUtils
+import com.accord.nmea.utils.PermissionUtils
 import com.accord.nmea.utils.PermisssionUtils
 import com.accord.nmea.utils.SharedPref
 import com.accord.nmea_parser.basic.BasicNmeaHandler
@@ -25,14 +36,14 @@ import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 @RequiresApi(Build.VERSION_CODES.N)
 class MainActivity : BaseActivity<MainViewModel>() {
+
+    private var userDeniedPermission = false
+
 
     companion object {
         const val TAG = "LoginActivity"
@@ -43,6 +54,8 @@ class MainActivity : BaseActivity<MainViewModel>() {
     lateinit var mainService: NmeaService
     lateinit var mBinding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
+    // Get a reference to the Job from the Flow so we can stop it from UI events
+    private var locationFlow: Job? = null
 
 
     override fun provideLayoutId(): Int {
@@ -51,6 +64,26 @@ class MainActivity : BaseActivity<MainViewModel>() {
 
     override fun injectDependencies() {
     }
+    private var isServiceBound = false
+    private var service: NmeaService? = null
+
+    private var foregroundOnlyServiceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+            val binder = iBinder as NmeaService.LocalBinder
+            service = binder.service
+            isServiceBound = true
+            //if (locationFlow?.isActive == true) {
+                // Activity started location updates but service wasn't bound yet - tell service to start now
+                service?.subscribeToLocationUpdates()
+          //  }
+        }
+
+        override fun onServiceDisconnected(componentName: ComponentName) {
+            service = null
+            isServiceBound = false
+        }
+    }
+
 
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -200,6 +233,9 @@ class MainActivity : BaseActivity<MainViewModel>() {
         })
 
 
+        val serviceIntent = Intent(this, NmeaService::class.java)
+        bindService(serviceIntent, foregroundOnlyServiceConnection, BIND_AUTO_CREATE)
+
     }
 
 
@@ -292,35 +328,62 @@ class MainActivity : BaseActivity<MainViewModel>() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1000 && grantResults.isNotEmpty()) {
-            var denidepermissionlist = mutableListOf<String>()
-
-            denidepermissionlist.clear()
-
-            for (i in grantResults.indices) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("UserInfo", " Accepted ${permissions[i]}")
-                } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                    denidepermissionlist.add(permissions[i])
-                }
-
+        if (requestCode == PermissionUtils.LOCATION_PERMISSION_REQUEST) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                userDeniedPermission = false
+                checkGPS()
+            } else {
+                userDeniedPermission = true
             }
+        }
 
-            var pemissionnames = ""
+    }
 
-            for (j in denidepermissionlist) {
-                pemissionnames = "$pemissionnames\\$j"
-            }
+    override fun onResume() {
+        super.onResume()
+        if (!userDeniedPermission) {
+            requestPermissionAndInit(this)
+        } else {
+            // Explain permission to user (don't request permission here directly to avoid infinite
+            // loop if user selects "Don't ask again") in system permission prompt
+            LibUIUtils.showLocationPermissionDialog(this)
+        }
 
-            if (pemissionnames.isNotEmpty()) {
-                PermisssionUtils(this).showBackgroundPermissionAlert(this, pemissionnames)
-            }
+    }
 
+    private fun checkGPS()
+    {
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        val provider = locationManager.getProvider(LocationManager.GPS_PROVIDER)
+        if (provider == null) {
+            Log.e(TAG, "Unable to get GPS_PROVIDER")
+            Toast.makeText(
+                this, getString(R.string.gps_not_supported),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            LibUIUtils.promptEnableGps(app,this)
+        }else{
+            service?.subscribeToLocationUpdates()
 
         }
 
-
     }
+
+    private fun requestPermissionAndInit(activity: Activity) {
+        if (PermissionUtils.hasGrantedPermissions(activity, PermissionUtils.REQUIRED_PERMISSIONS)) {
+            checkGPS()
+        } else {
+            // Request permissions from the user
+            ActivityCompat.requestPermissions(
+                activity,
+                PermissionUtils.REQUIRED_PERMISSIONS,
+                PermissionUtils.LOCATION_PERMISSION_REQUEST
+            )
+        }
+    }
+
 
 
 }

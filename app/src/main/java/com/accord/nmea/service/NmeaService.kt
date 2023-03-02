@@ -1,6 +1,7 @@
 package com.accord.nmea.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.accord.nmea.R
 import com.accord.nmea.parser.NmeaParsingManager
@@ -21,16 +23,17 @@ import org.greenrobot.eventbus.EventBus
 
 
 @RequiresApi(Build.VERSION_CODES.N)
-class NmeaService : Service(), OnNmeaMessageListener,LocationListener {
+class NmeaService : LifecycleService(), OnNmeaMessageListener,LocationListener {
 
     var nmeaMessageLiveData=MutableLiveData<String>("")
 
-    private val mBinder: IBinder = LocalBinder()
+    private val mBinder=LocalBinder()
 
     lateinit var locationManger:LocationManager
 
     val nmeaparsemanager=NmeaParsingManager(this)
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -63,9 +66,15 @@ class NmeaService : Service(), OnNmeaMessageListener,LocationListener {
         return START_STICKY
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
+      //  Log.d(TAG, "onBind()")
+      //  configurationChange = false
+     //   handleBind()
         return mBinder
     }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
@@ -192,12 +201,20 @@ class NmeaService : Service(), OnNmeaMessageListener,LocationListener {
     override fun onLocationChanged(location: Location) {
     }
 
-    class LocalBinder : Binder() {
-        fun getService(): NmeaService {
-            return NmeaService()
-        }
+
+
+
+    inner class LocalBinder : Binder() {
+        val service: NmeaService
+            get() = this@NmeaService
     }
 
 
+    fun subscribeToLocationUpdates() {
+        // Binding to this service doesn't actually trigger onStartCommand(). That is needed to
+        // ensure this Service can be promoted to a foreground service, i.e., the service needs to
+        // be officially started (which we do here).
+        startService(Intent(applicationContext, NmeaService::class.java))
 
+    }
 }
