@@ -15,15 +15,27 @@
     <color name="colorAccent">#03DAC5</color>
 
     <color name="cardBackground">#FE1D1D2F</color>
-    <color name="green">#7EC544</color>
-    <color name="yellow">#FBC233</color>
-    <color name="red">#F6404F</color>
+
     <color name="blue">#78DBF3</color>
     <color name="pink">#F375B5</color>
     <color name="orange">#FF7100</color>
     <color name="blue_pie">#007afe</color>
     <color name="red_pie">#F6404F</color>
     <color name="green_pie">#08a045</color>
-    <color name="gray">#c4c4c4</color>
     <color name="bg">#EEEEEE</color>
+
+    <!-- Text colors -->
+    <color name="body_text_1_light">#de000000</color>
+    <color name="body_text_2_light">#8a000000</color>
+    <color name="body_text_1_dark">#deffffff</color>
+    <color name="header_text_faded_color">#bbffffff</color>
+
+    <!-- GNSS Sky View -->
+    <color name="not_in_view_sat">#11000000</color>
+    <color name="gray">#ff888888</color>
+    <color name="red">#d50000</color>
+    <color name="yellow">#ffb300</color>
+    <color name="green">#009d00</color>
+
+    <color name="cn0_meter_border">@color/body_text_2_light</color>
 </resources>

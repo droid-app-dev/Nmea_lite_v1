@@ -67,4 +67,20 @@ object LibUIUtils {
     }
 
 
+
+    /**
+     * Converts screen dimension units from dp to pixels, based on algorithm defined in
+     * http://developer.android.com/guide/practices/screens_support.html#dips-pels
+     *
+     * @param dp value in dp
+     * @return value in pixels
+     */
+    @JvmStatic
+    fun dpToPixels(context: Context, dp: Float): Int {
+        // Get the screen's density scale
+        val scale = context.resources.displayMetrics.density
+        // Convert the dps to pixels, based on density scale
+        return (dp * scale + 0.5f).toInt()
+    }
+
 }

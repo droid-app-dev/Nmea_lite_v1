@@ -1,6 +1,7 @@
 package com.accord.nmea.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
@@ -68,6 +69,7 @@ class MainActivity : BaseActivity<MainViewModel>() {
     private var service: NmeaService? = null
 
     private var foregroundOnlyServiceConnection: ServiceConnection = object : ServiceConnection {
+        @SuppressLint("SuspiciousIndentation")
         override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
             val binder = iBinder as NmeaService.LocalBinder
             service = binder.service

@@ -1,5 +1,13 @@
 package com.accord.nmea.ui;
 
+import static com.accord.nmea.utils.GnssType.BEIDOU;
+import static com.accord.nmea.utils.GnssType.GALILEO;
+import static com.accord.nmea.utils.GnssType.GLONASS;
+import static com.accord.nmea.utils.GnssType.IRNSS;
+import static com.accord.nmea.utils.GnssType.NAVSTAR;
+import static com.accord.nmea.utils.GnssType.QZSS;
+import static com.accord.nmea.utils.GnssType.SBAS;
+import static com.accord.nmea.utils.SatelliteStatus.NO_DATA;
 import static java.util.Collections.emptyList;
 
 import android.app.Application;
@@ -18,7 +26,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 
+import com.accord.nmea.R;
+import com.accord.nmea.utils.GnssType;
 import com.accord.nmea.utils.LibUIUtils;
+import com.accord.nmea.utils.SatelliteStatus;
 
 import java.util.List;
 
@@ -58,7 +69,7 @@ public class GpsSkyView extends View {
 
     private float mCn0InViewAvg = 0.0f;
 
-   // private List<SatelliteStatus> statuses = emptyList();
+    private List<SatelliteStatus> statuses = emptyList();
 
 
 
@@ -80,17 +91,17 @@ public class GpsSkyView extends View {
         int textColor;
         int backgroundColor;
         int satStrokeColorUsed;
-        if (Application.Companion.getPrefs().getBoolean(mContext.getString(R.string.pref_key_dark_theme), false)) {
+       /* if (Application.Companion.getPrefs().getBoolean(mContext.getString(R.string.pref_key_dark_theme), false)) {
             // Dark theme
             textColor = getResources().getColor(android.R.color.secondary_text_dark);
             backgroundColor = ContextCompat.getColor(context, R.color.navdrawer_background_dark);
             satStrokeColorUsed = getResources().getColor(android.R.color.darker_gray);
-        } else {
+        } else {*/
             // Light theme
             textColor = getResources().getColor(R.color.body_text_2_light);
             backgroundColor = Color.WHITE;
             satStrokeColorUsed = Color.BLACK;
-        }
+        //}
 
         mHorizonActiveFillPaint = new Paint();
         mHorizonActiveFillPaint.setColor(backgroundColor);
@@ -286,7 +297,7 @@ public class GpsSkyView extends View {
     }
 
     private void drawSatellite(Canvas c, int s, float elev, float azim, float cn0, int prn,
-            GnssType gnssType, boolean usedInFix) {
+                               GnssType gnssType, boolean usedInFix) {
         double radius, angle;
         float x, y;
         // Place PRN text slightly below drawn satellite
@@ -497,7 +508,7 @@ public class GpsSkyView extends View {
     protected void onDraw(Canvas canvas) {
         int minScreenDimen;
 
-  /* minScreenDimen = Math.min(mWidth, mHeight);
+   minScreenDimen = Math.min(mWidth, mHeight);
 
         drawHorizon(canvas, minScreenDimen);
 
@@ -513,7 +524,7 @@ public class GpsSkyView extends View {
                         s.getGnssType(),
                         s.getUsedInFix());
             }
-        }*/
+        }
 
     }
 

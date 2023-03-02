@@ -16,8 +16,8 @@ class ViewpagerAdapter(fragment: FragmentManager, lifecycle: Lifecycle) :
 
         return when (position) {
             0 -> LiveFragment()
-            1 -> LogFragment()
-            2 -> SkyviewFragment()
+            1 -> SkyviewFragment()
+            2 -> LogFragment()
             else -> Fragment()
         }
     }
