@@ -78,7 +78,16 @@
         app:layout_constraintLeft_toRightOf="@id/guideline_left"
         app:layout_constraintRight_toLeftOf="@id/guideline_right" />
 
-    <TextView
+    <com.accord.nmea.ui.sky.BarGraphView
+        android:id="@+id/tv1"
+        android:layout_marginBottom="70dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toTopOf="@id/accord_logo"
+        app:layout_constraintLeft_toRightOf="@id/guideline_left"
+        app:layout_constraintRight_toLeftOf="@id/guideline_right"/>
+    <!--<TextView
         android:id="@+id/tv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -88,9 +97,7 @@
         android:textColor="@color/black"
         android:textSize="40dp"
         android:textStyle="bold|italic"
-        app:layout_constraintBottom_toTopOf="@id/accord_logo"
-        app:layout_constraintLeft_toRightOf="@id/guideline_left"
-        app:layout_constraintRight_toLeftOf="@id/guideline_right" />
+      />-->
 
 
     <ImageView

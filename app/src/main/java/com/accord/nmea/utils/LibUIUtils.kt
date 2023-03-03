@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -81,6 +83,19 @@ object LibUIUtils {
         val scale = context.resources.displayMetrics.density
         // Convert the dps to pixels, based on density scale
         return (dp * scale + 0.5f).toInt()
+    }
+
+    /**
+     * Returns true if this device supports the Sensor.TYPE_ROTATION_VECTOR sensor, false if it
+     * doesn't
+     *
+     * @return true if this device supports the Sensor.TYPE_ROTATION_VECTOR sensor, false if it
+     * doesn't
+     */
+    fun isRotationVectorSensorSupported(context: Context): Boolean {
+        val sensorManager = context
+            .getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        return sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) != null
     }
 
 }
